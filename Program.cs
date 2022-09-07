@@ -32,33 +32,20 @@ namespace Calculator
         {
             string exp = expression.Replace(" ", "");
             //Регулярное выражение для проверки введенного значения
-            Regex regex = new Regex(@"^-*\d*[\/\*+-]{1}-*\d*$");
+            Regex regex = new Regex(@"^(-*\d+)([/\*\+\-])(-*\d+)$");
 
             if (!regex.IsMatch(exp))
             {
                 Console.WriteLine("Введеное выражение не соответствует ожидаемому");
             }
 
-            //Парсинг операндов
-            string pattern = @"[/*+-]+";
-            Regex rgx = new Regex(pattern);
+            string[] operands = regex.Split(exp);
 
-            string[] operands = rgx.Split(exp);
-
-            //Парсинг оператора
-            string patternOp = @"\d"; 
-            Regex rgxOp = new Regex(patternOp);
-
-            string[] operators = rgxOp.Split(exp);
-            /*foreach (string op in operators)
-            {
-                Console.WriteLine(op);
-            }
-            Console.WriteLine(operators.Length);*/
+            operands = operands.Where(x => x != "").ToArray();
 
             this.lOperand = operands[0];
-            this.rOperand = operands[1];
-            this.arithmeticSign = operators[1].ToCharArray()[0];
+            this.rOperand = operands[2];
+            this.arithmeticSign = operands[1].ToCharArray()[0];
 
         }
 
@@ -69,27 +56,26 @@ namespace Calculator
         public static void CalculateResult(Parser parser)
         {
             float result = 0;
-            if(parser.ArithmeticSign == '+')
+            if (parser.ArithmeticSign == '+')
             {
                 result = Convert.ToSingle(parser.LOperand) + Convert.ToSingle(parser.ROperand);
-                Console.WriteLine(result);
+                Console.WriteLine("Результат: {0}", result);
             }
             if (parser.ArithmeticSign == '*')
             {
                 result = Convert.ToSingle(parser.LOperand) * Convert.ToSingle(parser.ROperand);
-                Console.WriteLine(result);
+                Console.WriteLine("Результат: {0}", result);
             }
             if (parser.ArithmeticSign == '/')
             {
                 result = Convert.ToSingle(parser.LOperand) / Convert.ToSingle(parser.ROperand);
-                Console.WriteLine(result);
+                Console.WriteLine("Результат: {0}", result);
             }
             if (parser.ArithmeticSign == '-')
             {
                 result = Convert.ToSingle(parser.LOperand) - Convert.ToSingle(parser.ROperand);
-                Console.WriteLine(result);
+                Console.WriteLine("Результат: {0}", result);
             }
-
 
         }
 
@@ -98,6 +84,24 @@ namespace Calculator
     class ErrorHandler
     {
         public string ErrorMessage;
+
+        public void Handler(string expression)
+        {
+            //Обработка всех возможных ошибок
+
+            //Проверка наличия операнда
+            string exp = expression.Replace(" ", "");
+            //Регулярное выражение для проверки введенного значения
+            Regex regex = new Regex(@"^(-*\d+)([/\*\+\-])(-*\d+)$");
+            if (!regex.IsMatch(exp))
+            {
+                Console.WriteLine("Введеное выражение не соответствует ожидаемому");
+            }
+            //Проверка соответствия регулряному выражению
+
+            //Проверка деления на ноль
+
+        }
 
         public void ShowMessage(string message)
         {
@@ -115,7 +119,7 @@ namespace Calculator
 
             Console.WriteLine("Введите выражение:");
             expressions = Console.ReadLine();
-            
+
             Parser parser = new Parser();
             parser.Parse(expressions);
 
@@ -127,4 +131,5 @@ namespace Calculator
     }
 
 }
+
 
